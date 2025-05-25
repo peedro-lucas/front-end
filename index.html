@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Veículos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🚗 Sistema de Gerenciamento de Veículos</h1>
+            <nav class="nav">
+                <button onclick="mostrarSecao('home')" class="nav-btn active" id="nav-home">
+                    🏠 Início
+                </button>
+                <button onclick="mostrarSecao('criar')" class="nav-btn" id="nav-criar">
+                    ➕ Adicionar Veículo
+                </button>
+                <button onclick="mostrarSecao('buscar')" class="nav-btn" id="nav-buscar">
+                    🔍 Buscar
+                </button>
+                <button onclick="mostrarSecao('filtros')" class="nav-btn" id="nav-filtros">
+                    🔧 Filtros
+                </button>
+            </nav>
+        </header>
+
+        <!-- Mensagens de feedback -->
+        <div id="message" class="message hidden"></div>
+
+        <!-- Seção Home - Lista de Veículos -->
+        <section id="secao-home" class="secao active">
+            <div class="secao-header">
+                <h2>📋 Lista de Veículos</h2>
+                <button onclick="listarTodosVeiculos()" class="btn btn-secondary">
+                    🔄 Atualizar Lista
+                </button>
+            </div>
+            <div id="vehicles-list" class="vehicles-grid">
+                <!-- Veículos serão carregados aqui -->
+            </div>
+        </section>
+
+        <!-- Seção Criar Veículo -->
+        <section id="secao-criar" class="secao">
+            <div class="secao-header">
+                <h2 id="form-title">➕ Adicionar Novo Veículo</h2>
+            </div>
+            
+            <form id="vehicleForm" class="vehicle-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modelo">Modelo *</label>
+                        <input type="text" id="modelo" required placeholder="Ex: Civic, CB600">
+                    </div>
+                    <div class="form-group">
+                        <label for="fabricante">Fabricante *</label>
+                        <input type="text" id="fabricante" required placeholder="Ex: Honda, Toyota">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ano">Ano *</label>
+                        <input type="number" id="ano" min="1900" max="2030" required placeholder="2023">
+                    </div>
+                    <div class="form-group">
+                        <label for="preco">Preço (R$) *</label>
+                        <input type="number" id="preco" step="0.01" min="0" required placeholder="50000.00">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cor">Cor *</label>
+                        <input type="text" id="cor" required placeholder="Ex: Branco, Preto">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo *</label>
+                        <select id="tipo" onchange="toggleCamposEspecificos()" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="CARRO">🚗 Carro</option>
+                            <option value="MOTO">🏍️ Moto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Campos específicos para CARRO -->
+                <div id="campos-carro" class="campos-especificos hidden">
+                    <h3>🚗 Informações do Carro</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantidadePortas">Quantidade de Portas *</label>
+                            <select id="quantidadePortas">
+                                <option value="">Selecione</option>
+                                <option value="2">2 portas</option>
+                                <option value="4">4 portas</option>
+                                <option value="5">5 portas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipoCombustivel">Tipo de Combustível *</label>
+                            <select id="tipoCombustivel">
+                                <option value="">Selecione</option>
+                                <option value="gasolina">⛽ Gasolina</option>
+                                <option value="etanol">🌱 Etanol</option>
+                                <option value="flex">🔄 Flex</option>
+                                <option value="diesel">🛢️ Diesel</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos específicos para MOTO -->
+                <div id="campos-moto" class="campos-especificos hidden">
+                    <h3>🏍️ Informações da Moto</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cilindrada">Cilindrada (cc) *</label>
+                            <input type="number" id="cilindrada" min="50" max="2000" placeholder="600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        ➕ Adicionar Veículo
+                    </button>
+                    <button type="button" onclick="cancelarEdicao()" id="cancel-btn" class="btn btn-secondary hidden">
+                        ❌ Cancelar
+                    </button>
+                    <button type="button" onclick="limparFormulario()" class="btn btn-outline">
+                        🧹 Limpar
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Seção Buscar -->
+        <section id="secao-buscar" class="secao">
+            <div class="secao-header">
+                <h2>🔍 Buscar Veículo</h2>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-form">
+                    <input type="number" id="searchId" placeholder="Digite o ID do veículo" min="1">
+                    <button onclick="buscarVeiculo()" class="btn btn-primary">
+                        🔍 Buscar
+                    </button>
+                </div>
+                
+                <div id="search-result" class="search-result">
+                    <!-- Resultado da busca aparecerá aqui -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Filtros -->
+        <section id="secao-filtros" class="secao">
+            <div class="secao-header">
+                <h2>🔧 Filtrar Veículos</h2>
+            </div>
+            
+            <div class="filter-container">
+                <form id="filterForm" class="filter-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filtro-tipo">Tipo</label>
+                            <select id="filtro-tipo" onchange="toggleCamposFiltroEspecificos()">
+                                <option value="">Todos os tipos</option>
+                                <option value="CARRO">🚗 Carro</option>
+                                <option value="MOTO">🏍️ Moto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filtro-fabricante">Fabricante</label>
+                            <input type="text" id="filtro-fabricante" placeholder="Ex: Honda, Toyota">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filtro-modelo">Modelo</label>
+                            <input type="text" id="filtro-modelo" placeholder="Ex: Civic, CB600">
+                        </div>
+                        <div class="form-group">
+                            <label for="filtro-cor">Cor</label>
+                            <input type="text" id="filtro-cor" placeholder="Ex: Branco, Preto">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filtro-ano-min">Ano Mínimo</label>
+                            <input type="number" id="filtro-ano-min" min="1900" max="2030" placeholder="2000">
+                        </div>
+                        <div class="form-group">
+                            <label for="filtro-ano-max">Ano Máximo</label>
+                            <input type="number" id="filtro-ano-max" min="1900" max="2030" placeholder="2024">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filtro-preco-min">Preço Mínimo (R$)</label>
+                            <input type="number" id="filtro-preco-min" step="0.01" min="0" placeholder="10000.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="filtro-preco-max">Preço Máximo (R$)</label>
+                            <input type="number" id="filtro-preco-max" step="0.01" min="0" placeholder="100000.00">
+                        </div>
+                    </div>
+
+                    <!-- Campos específicos para CARRO nos filtros -->
+                    <div id="filtro-campos-carro" class="campos-especificos hidden">
+                        <h3>🚗 Filtros Específicos para Carros</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filtro-quantidade-portas">Quantidade de Portas</label>
+                                <select id="filtro-quantidade-portas">
+                                    <option value="">Todas as quantidades</option>
+                                    <option value="2">2 portas</option>
+                                    <option value="4">4 portas</option>
+                                    <option value="5">5 portas</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filtro-tipo-combustivel">Tipo de Combustível</label>
+                                <select id="filtro-tipo-combustivel">
+                                    <option value="">Todos os combustíveis</option>
+                                    <option value="gasolina">⛽ Gasolina</option>
+                                    <option value="etanol">🌱 Etanol</option>
+                                    <option value="flex">🔄 Flex</option>
+                                    <option value="diesel">🛢️ Diesel</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos específicos para MOTO nos filtros -->
+                    <div id="filtro-campos-moto" class="campos-especificos hidden">
+                        <h3>🏍️ Filtros Específicos para Motos</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filtro-cilindrada-min">Cilindrada Mínima (cc)</label>
+                                <input type="number" id="filtro-cilindrada-min" min="50" max="2000" placeholder="125">
+                            </div>
+                            <div class="form-group">
+                                <label for="filtro-cilindrada-max">Cilindrada Máxima (cc)</label>
+                                <input type="number" id="filtro-cilindrada-max" min="50" max="2000" placeholder="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="button" onclick="aplicarFiltros()" class="btn btn-primary">
+                            🔍 Aplicar Filtros
+                        </button>
+                        <button type="button" onclick="limparFiltros()" class="btn btn-outline">
+                            🧹 Limpar Filtros
+                        </button>
+                        <button type="button" onclick="listarTodosVeiculos(); mostrarSecao('home');" class="btn btn-secondary">
+                            📋 Ver Todos
+                        </button>
+                    </div>
+                </form>
+
+                <div id="filter-result" class="filter-result">
+                    <!-- Resultado dos filtros aparecerá aqui -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-overlay" onclick="fecharModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Confirmar Exclusão</h3>
+                <button onclick="fecharModal()" class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir este veículo?</p>
+                <p><strong>Esta ação não pode ser desfeita.</strong></p>
+            </div>
+            <div class="modal-actions">
+                <button onclick="confirmarExclusao()" class="btn btn-danger">
+                    🗑️ Sim, Excluir
+                </button>
+                <button onclick="fecharModal()" class="btn btn-secondary">
+                    ❌ Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
